@@ -8,6 +8,8 @@ on:
       - data/**/*
       - sources/**/*
       - .github/workflows/*.yaml
+  schedule:
+    - cron: "30 6 * * *"
 permissions:
   contents: read
   id-token: write
