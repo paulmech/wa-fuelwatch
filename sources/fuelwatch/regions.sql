@@ -1,0 +1,1 @@
+select  region_description from fuelwatch group by 1

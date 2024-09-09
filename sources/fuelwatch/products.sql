@@ -1,0 +1,1 @@
+select product_description from fuelwatch group by 1

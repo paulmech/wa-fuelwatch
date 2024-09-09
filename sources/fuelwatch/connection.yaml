@@ -1,0 +1,5 @@
+# This file was automatically generated
+name: fuelwatch
+type: duckdb
+options:
+  filename: fuelwatch.duckdb

@@ -1,0 +1,1 @@
+select * from postcodes where state='WA' AND postcode NOT LIKE '69%'
