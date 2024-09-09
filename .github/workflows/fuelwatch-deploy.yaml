@@ -30,5 +30,6 @@ jobs:
         run: |
           export PATH=$PATH:$PWD/duckdb
           cd data
+          ./get-data.sh
           ./make-db.sh ../sources/fuelwatch/fuelwatch.db
 

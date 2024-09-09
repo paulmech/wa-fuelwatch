@@ -2,7 +2,7 @@
 
 set -e
 
-DOWNLOAD_PATH=downloaded
+DOWNLOAD_PATH=$PWD/downloaded
 
 # postcode data
 OUTPUT_POSTCODE=$DOWNLOAD_PATH/australian_postcodes.csv
