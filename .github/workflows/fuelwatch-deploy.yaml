@@ -49,4 +49,4 @@ jobs:
 
       - name: sync bucket
         run: |
-          aws s3 sync build/ ${{vars.AWS_DEPLOY_BUCKET}}
+          aws s3 sync build/ s3://${{vars.AWS_DEPLOY_BUCKET}}
