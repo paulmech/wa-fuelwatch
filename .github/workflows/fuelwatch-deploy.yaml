@@ -25,10 +25,11 @@ jobs:
         run: |
           curl -L ${DUCKDB_URL} -o duckdb.zip
           unzip duckdb.zip -d duckdb
-          export PATH=$PATH:$PWD/duckdb
       
       - name: make fuelwatch database
         run: |
+          export PATH=$PATH:$PWD/duckdb
+          which duckdb
           cd data
           ./make-db.sh ../sources/fuelwatch/fuelwatch.db
 
