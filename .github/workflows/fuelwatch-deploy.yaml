@@ -23,7 +23,7 @@ jobs:
       
       - name: download duckdb
         run: |
-          curl ${DUCKDB_URL} -o duckdb.zip
+          curl -L ${DUCKDB_URL} -o duckdb.zip
           unzip duckdb.zip -d duckdb
           export PATH=$PATH:$PWD/duckdb
       
