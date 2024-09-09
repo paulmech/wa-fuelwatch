@@ -29,7 +29,6 @@ jobs:
       - name: make fuelwatch database
         run: |
           export PATH=$PATH:$PWD/duckdb
-          which duckdb
           cd data
           ./make-db.sh ../sources/fuelwatch/fuelwatch.db
 

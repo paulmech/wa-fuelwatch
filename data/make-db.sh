@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -e
+
 DBFILE=${1:-}
 MIGRATION_FILE=bootstrap.sql
-export DOWNLOAD_PATH=downloaded
+export DOWNLOAD_PATH=$PWD/downloaded
 
 if [ -z $DBFILE ]; then
     echo "Provide a filename to use as database output"
