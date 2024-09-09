@@ -38,3 +38,14 @@ jobs:
           npm ci
           npm run sources
           npm run build
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+            role-to-assume: ${{vars.AWS_ASSUME_ROLE}}
+            role-session-name: github-actions
+            aws-region: ${{vars.AWS_DEPLOY_REGION}}
+
+      - name: sync bucket
+        run: |
+          aws s3 sync build/* ${{vars.AWS_DEPLOY_BUCKET}}
