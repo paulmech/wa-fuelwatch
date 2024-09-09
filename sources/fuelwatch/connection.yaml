@@ -2,4 +2,4 @@
 name: fuelwatch
 type: duckdb
 options:
-  filename: fuelwatch.duckdb
+  filename: fuelwatch.db

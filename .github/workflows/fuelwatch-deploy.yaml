@@ -33,3 +33,7 @@ jobs:
           ./get-data.sh
           ./make-db.sh ../sources/fuelwatch/fuelwatch.db
 
+      - name: build evidence site
+        run: |
+          npm run sources
+          npm run build

@@ -9,3 +9,4 @@ static/data
 .env
 .evidence/meta
 data/downloaded/[^\.]*
+sources/**/*.db
