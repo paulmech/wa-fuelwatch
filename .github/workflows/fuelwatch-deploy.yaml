@@ -22,13 +22,13 @@ jobs:
         uses: actions/checkout@v4
       
       - name: download duckdb
-        run:
-          - curl ${DUCKDB_URL} -o duckdb.zip
-          - unzip duckdb.zip -d duckdb
-          - export PATH=$PATH:$PWD/duckdb
+        run: |
+          curl ${DUCKDB_URL} -o duckdb.zip
+          unzip duckdb.zip -d duckdb
+          export PATH=$PATH:$PWD/duckdb
       
       - name: make fuelwatch database
-        run:
-          - cd data
-          - ./make-db.sh ../sources/fuelwatch/fuelwatch.db
+        run: |
+          cd data
+          ./make-db.sh ../sources/fuelwatch/fuelwatch.db
 
