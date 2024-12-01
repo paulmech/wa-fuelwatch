@@ -23,7 +23,7 @@ while true; do
     OUTPUT_FUELWATCH=$DOWNLOAD_PATH/$FILENAME
 
     if [ ! -f $OUTPUT_FUELWATCH ]; then
-        curl -f -sL "${FUELWATCH_URL_BASE}${FILENAME}" -o $DOWNLOAD_PATH/$FILENAME
+        curl -f -sL "${FUELWATCH_URL_BASE}${FILENAME}" -o $DOWNLOAD_PATH/$FILENAME || true
     fi
     let COUNTER="COUNTER + 1"
     if [ $COUNTER -gt $BACKFILL_MONTHS ]; then
