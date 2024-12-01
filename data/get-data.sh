@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eo pipefail
 
 DOWNLOAD_PATH=$PWD/downloaded
 
@@ -23,7 +23,7 @@ while true; do
     OUTPUT_FUELWATCH=$DOWNLOAD_PATH/$FILENAME
 
     if [ ! -f $OUTPUT_FUELWATCH ]; then
-        curl -sL "${FUELWATCH_URL_BASE}${FILENAME}" -o $DOWNLOAD_PATH/$FILENAME
+        curl -f -sL "${FUELWATCH_URL_BASE}${FILENAME}" -o $DOWNLOAD_PATH/$FILENAME
     fi
     let COUNTER="COUNTER + 1"
     if [ $COUNTER -gt $BACKFILL_MONTHS ]; then
