@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+        <title>reveal.js</title>
+
+        <link rel="stylesheet" href="dist/reset.css" />
+        <link rel="stylesheet" href="dist/reveal.css" />
+        <link rel="stylesheet" href="dist/theme/beige.css" />
+
+        <!-- Theme used for syntax highlighted code -->
+        <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                    <section>
+						<section>
+							<h2 class="r-fit-text">NOT ALL DATA</h2>
+							<h2 class="r-fit-text">NEEDS A STACK</h2>
+						</section>
+						<section>
+							<h3>Issues</h3>
+							<ul>
+								<li>can be <b>difficult</b> to test ideas, especially <em>locally</em></li>
+								<li class="fragment">tools are <b>costly</b> or <b>complex</b> to setup</li>
+								<li class="fragment">expectation to be <em>production ready</em></li>
+							</ul>
+						</section>
+                    </section>
+
+					<section>
+						<section>
+							<h2> Solution</h2>
+							<img src="/images/fafo.png" width="30%"/>
+						</section>
+
+						<section data-transition="slide-in">
+							<h2 > <s>Solution</s> Playground</h2>
+
+							<img class="fragment zoom-in" src="/images/duckdb.png" width="45%"/>
+							<img class="fragment zoom-in" src="/images/evidence.png" width="45%"/>
+						</section>
+						<section data-transition="fade-in">
+							<h3 class="r-fit-text">Using FuelWatch Data to find a good Servo</h3>
+							<video data-autoplay src="/videos/evidence.webm" loop="true"></video>
+						</section>
+					</section>
+
+					<section>
+						<section>
+							<h2 class="r-fit-text">Duck DB 🦆</h2>
+						</section>
+						<section>
+							<h3>Duck DB</h3>
+							<ul>
+								<li>Created ~2019</li>
+								<li class="fragment">Academic Origins
+									<ul>
+										<li class="fragment">Centrum Wiskunde & Informatica, Amsterdam NL</li>
+										<li class="fragment">Python was created here!</li>
+									</ul>
+								</li>
+
+							</ul>
+						</section>
+
+						<section>
+							<h3 class="r-fit-text">DuckDB - What is it?</h3>
+						</section>
+
+						<section>
+							<h3 class="r-fit-text">DuckDB is an in-process analytical database</h3>
+							<ul>
+								<li >no daemon</li>
+								<li class="fragment">cross platform, cross arch</li>
+								<li class="fragment">no dependencies</li>
+								<li class="fragment">multi modal
+									<ul style="font-size:1.4rem; line-height: 2.4rem;">
+										<li>Command Line tool</li>
+										<li>Library (e.g. Py, R, Java, Node)</li>
+										<li>ODBC/JDBC Driver</li>
+									</ul>
+								</li>
+							</ul>
+						</section>
+
+						<section>
+							<h1 >What it do?</h1>
+							<ul>
+								<li class="fragment">work with complex data</li>
+								<li class="fragment">convert between data formats</li>
+								<li class="fragment">read and write data lakes</li>
+							</ul>
+						</section>
+						<section>
+							<h2>DuckDB Extensions</h2>
+							<img width="90%" src="/images/extensions.png"/>
+						</section>
+						<section>
+							<h2>Non Features</h2>
+							<ul>
+								<li class="fragment">Access Control</li>
+								<li class="fragment">Write Concurrency</li>
+								<li class="fragment">Network Access</li>
+							</ul>
+							
+							<p class="r-fit-text fragment">
+								For some of these non-features, check out <a href="https://motherduck.com/">https://motherduck.com</a>
+							</p>
+
+						</section>
+					</section>
+					<section>
+						<section>
+							<h2 class="r-fit-text">Use Case #1 - supersize JSON</h2>
+							<p><em>AEMO WEMDE Dispatch Solution</em></p>
+							<ul>
+								<li class="fragment">Single document 25mb JSON file</li>
+								<li class="fragment">Deeply nested and complex</li>
+								<li class="fragment">One file every 5 minutes - over 6Gb per day</li>
+							</ul>
+						</section>
+						<section>
+							<h2 class="r-fit-text">Using CLI or DBeaver with DuckDB to interrogate large JSON files</h2>
+							<video data-autoplay src="/videos/duckdb.webm" loop="true"></video>
+							<ul style="font-size:1.4rem">
+								<li class="fragment">Use <code style='background:#DDD'>UNNEST</code> to unpack JSON arrays</li>
+								<li class="fragment">CTE for multiple levels of nesting</li>
+							</ul>
+						</section>
+					</section>
+                </section>
+
+				<section>
+					<h2 class="r-fit-text">Use Case #2 - GeoSpatial</h2>
+					<p>Finding neighbouring postcodes using <code style="background:#DDD">ST_Distance</code> </p>
+					<pre class="fragment">
+						<code style="font-size:0.7rem;line-height:1rem">install spatial;
+load spatial;
+with crossjoin as (
+    select
+     p1.postcode p1_pc,
+     p2.postcode p2_pc,
+    --  approximate conversion to km
+     111 * st_distance(
+        st_point(p1.long,p1.lat),
+        st_point(p2.long,p2.lat)
+     ) home_distance 
+     from postcodes p1     
+     cross join postcodes p2
+     where p1.state='WA' and not (p1.postcode like '69%' or p2.postcode  LIKE '69%')
+),
+filtered as (
+    select * from crossjoin where home_distance <= 7
+)
+
+select
+    p1_pc postcode,
+    array_to_string(list_distinct(array_agg(p2_pc ))[:10],',') neighbours 
+    from filtered
+    group by 1 order by p1_pc;
+						</code>
+					</pre>
+				</section>
+
+				<section>
+					<h2 class="r-fit-text">Use Case #3 - Write Data Lake</h2>
+					<pre>
+						<code style="line-height:2rem; font-size:1.2rem;">
+							LOAD httpfs; LOAD aws;
+							CALL load_aws_credentials();
+							CREATE TABLE fuelprices AS
+								SELECT * FROM 'FuelWatch**.json';
+							COPY fuelprices TO 's3://my-bucket/fuelwatch' (
+								FORMAT PARQUET,
+								COMPRESSION ZSTD,
+								OVERWRITE_OR_IGNORE,
+								PARTITION_BY(publish_date)
+							);
+						</code>
+					</pre>
+					<p class="fragment">... or something like that</p>
+				</section>
+
+				<section>
+					<section>
+						<h2 class="r-fit-text">DuckDB &mdash; Sharp Edges</h2>
+						<img src="/images/chucknorris.png" width="35%"/>
+						<img class="fragment" src="/images/duckdb-ltm.png" width="35%"/>
+					</section>
+					<section>
+						<h2 class="r-fit-text">Avoiding memory issues</h2>
+						<ul>
+							<li class="fragment">write to a database file, not in-memory</li>
+							<li class="fragment">write intermediate results to a table</li>
+							<li class="fragment">set a bigger memory limit</li>
+							<li class="fragment">limit threads</li>
+							<li class="fragment">avoid window functions</li>
+							<li class="fragment">split the work up</li>
+							<li class="fragment">ask kindly for support</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>What is Evidence.dev?</h2>
+						<img class="zoom-in" src="/images/evidence.png" width="80%"/>
+					</section>
+
+					<section data-markdown>
+						## Data Application Frameworks
+
+						- Streamlit
+						- RShiny
+						- Panel
+						- Redash
+						- Cube.js
+						- Evidence.dev
+
+						_It shouldn't be so painful to build interactive Data Products_
+					</section>
+
+					<section>
+						<h2 class="r-fit-text">Static Site Generators</h2>
+						<ul>
+							<li class="fragment">Docusaurus</li>
+							<li class="fragment">mkdocs</li>
+							<li class="fragment">gitbook</li>
+						</ul>
+					</section>
+					<section>
+						<h2>People like them because</h2>
+						<ul>
+							<li class="fragment">Easy to contribute to</li>
+							<li class="fragment">Easy to review</li>
+							<li class="fragment">Looks good by default</li>
+							<li class="fragment">Reduced complexity</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2 class="r-fit-text">How Evidence.dev works</h2>
+						<p class="fragment r-fit-text">
+							Toolset built in Node.js, Svelte, Apache ECharts and Duckdb - but as a developer, you rarely have to interact directly with those tools.
+						</p>
+
+						<p class="fragment">
+							It has <b>3 modes</b> of operation:
+							<ul class="fragment">
+								<li> <code style="background:#DDD; font-size:1.4rem;">npm run sources</code> - gather data sources</li>
+								<li><code style="background:#DDD; font-size:1.4rem;">npm run dev</code> - run in dev mode </li>
+								<li> <code style="background:#DDD; font-size:1.4rem;">npm run build</code> - build for production</li>
+							</ul>
+						</p>
+					</section>
+					<Section>
+						<h2 class="r-fit-text">Connection Sources</h2>
+						<img width="60%" src="/images/sources.png"/>
+						<p>
+							from <a href="https://docs.evidence.dev/">https://docs.evidence.dev/</a>
+						</p>
+					</Section>
+				</section>
+
+				<section>
+					<h2>Install Evidence.dev</h2>
+					<ul>
+						<li class="fragment">scaffold new project by cloning evidence template</li>
+						<li class="fragment">install node dependencies</li>
+						<li class="fragment">add a data source</li>
+						<li class="fragment">write a source query</li>
+					</ul>
+				</section>
+
+				<section>
+					<section>
+						<h2>Start Creating!</h2>
+						<p class="r-fit-text">Use your favourite text editor; I like vscode because Evidence.dev create a plugin for it. Then repeat the following steps:
+							<ul>
+								<li>web browser</li>
+								<li>vscode</li>
+								<li><a href="https://duckdb.org/docs/">https://duckdb.org/docs/</a></li>
+								<li> <a href="https://docs.evidence.dev/">https://docs.evidence.dev/</a></li>
+							</ul>
+						</p>
+					</section>
+
+					<section>
+						<h2 class="r-fit-text">What does a typical Evidence Markdown file consist of?</h2>
+						<hr/>
+						<h4>Input components</h4>
+							<ul>
+								<li>Dropdown</li>
+								<li>Date Selectors</li>
+								<li>Slider</li>
+								<li>Text Input</li>
+								<li>Button Groups</li>
+							</ul>
+					</section>
+
+					<section>
+					<h2 class="r-fit-text">What does a typical Evidence Markdown file consist of?</h2>
+						<hr/>
+						<h4>Chart components</h4>
+						<ul>
+							<li>Area, Line and Bar Charts</li>
+							<li>Sankey Diagram</li>
+							<li>Bubble Maps and BoxPlots</li>
+							<li>Geo Maps</li>
+							<li>Heatmaps</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2 class="r-fit-text">What does a typical Evidence Markdown file consist of?</h2>
+						<hr/>
+						<h4>SQL Queries</h4>
+						<ul>
+							<li>Inline queries can only reference source abstractions</li>
+							<li>source abstractions are defined in SQL files in source directory</li>
+							<li>common queries can be defined and re-used across multiple markdown files</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<h2 class="r-fit-text">Deploy your evidence website to production</h2>
+					<ul>
+						<li class="fragment"><code style="background:#DDD; font-size:2rem">npm run build</code></li>
+						<li class="fragment">upload <code  style="background:#DDD; font-size:2rem">build/</code> to web server</li>
+						<li class="fragment">that's it</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Thank you!</h2>
+					<img width="45%" src="/images/qr-aemowem.png"/>
+					<img width="45%" src="/images/qr-tind.png"/>
+					<h2>QUestions?</h2>
+				</section>
+            </div>
+        </div>
+
+        <script src="dist/reveal.js"></script>
+        <script src="plugin/notes/notes.js"></script>
+        <script src="plugin/markdown/markdown.js"></script>
+        <script src="plugin/highlight/highlight.js"></script>
+        <script>
+            // More info about initialization & config:
+            // - https://revealjs.com/initialization/
+            // - https://revealjs.com/config/
+            Reveal.initialize({
+                hash: true,
+
+                // Learn about plugins: https://revealjs.com/plugins/
+                plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+            });
+        </script>
+    </body>
+</html>
