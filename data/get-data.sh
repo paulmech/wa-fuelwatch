@@ -19,7 +19,7 @@ fi
 
 COUNTER=0
 while true; do
-    FILENAME=$(date --date "$COUNTER month ago" "+FuelWatchRetail-%m-%Y.csv")
+    FILENAME=$(date --date="$(date +%Y-%m-15) -${COUNTER} month" "+FuelWatchRetail-%m-%Y.csv")
     OUTPUT_FUELWATCH=$DOWNLOAD_PATH/$FILENAME
 
     if [ ! -f $OUTPUT_FUELWATCH ]; then

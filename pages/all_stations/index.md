@@ -43,6 +43,9 @@ from stations where valid_to is null
 ```
 
 <div style="display:none">
+
+<a href="/robots.txt">Robots.txt</a>
+
 Station List
 
 {#each all_stations as station }
